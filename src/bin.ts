@@ -3,7 +3,6 @@ import commander from "commander";
 import { unlinkSync, copyFileSync } from "fs";
 import { join } from "path";
 import { spawnSync } from "child_process";
-
 commander.option(
   "-w --workingpath <path>",
   "Working directory for project",
