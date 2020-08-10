@@ -47,8 +47,6 @@ npx @raydeck/serverless-lambda-builder serverless [options]
 
 * [buildServerlessFunctionsObj](#buildserverlessfunctionsobj)
 * [buildWrapperText](#buildwrappertext)
-* [dependencyPath](#dependencypath)
-* [extractLambdas](#extractlambdas)
 * [getLambdaExports](#getlambdaexports)
 * [makeAPIGatewayLambda](#makeapigatewaylambda)
 * [makeDDBLambda](#makeddblambda)
@@ -81,7 +79,7 @@ export default function getLambdas(
 }
 `
 
-*Defined in [index.ts:124](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L124)*
+*Defined in [index.ts:124](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L124)*
 
 ___
 
@@ -89,7 +87,7 @@ ___
 
 • **lambdaExports**: *object*
 
-*Defined in [index.ts:78](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L78)*
+*Defined in [index.ts:78](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L78)*
 
 #### Type declaration:
 
@@ -101,7 +99,7 @@ ___
 
 ▸ **buildServerlessFunctionsObj**(`exportsObj`: object, `defaults`: Omit‹[LambdaOptions](#interfaceslambdaoptionsmd), "func"›, `base`: string): *object*
 
-*Defined in [index.ts:135](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L135)*
+*Defined in [index.ts:135](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L135)*
 
 **Parameters:**
 
@@ -121,7 +119,7 @@ ___
 
 ▸ **buildWrapperText**(`exportsObj`: object): *string*
 
-*Defined in [index.ts:104](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L104)*
+*Defined in [index.ts:104](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L104)*
 
 **Parameters:**
 
@@ -133,54 +131,11 @@ Name | Type |
 
 ___
 
-###  dependencyPath
-
-▸ **dependencyPath**(`key`: string, `cwd`: string): *string*
-
-*Defined in [bin.ts:18](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/bin.ts#L18)*
-
-Get the path to a node dependency, traversing up the tree as expected
-
-**`internal`** 
-
-**Parameters:**
-
-Name | Type | Default | Description |
------- | ------ | ------ | ------ |
-`key` | string | - | Identifier of the node package to find |
-`cwd` | string | process.cwd() | Context for working directory (changes with recursive calls)  |
-
-**Returns:** *string*
-
-___
-
-###  extractLambdas
-
-▸ **extractLambdas**(`workingPath`: string): *object*
-
-*Defined in [bin.ts:30](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/bin.ts#L30)*
-
-Extract all lambda object candidates from descendant trees
-
-**`internal`** 
-
-**Parameters:**
-
-Name | Type | Default | Description |
------- | ------ | ------ | ------ |
-`workingPath` | string | process.cwd() | Context from which to evaluate current paths  |
-
-**Returns:** *object*
-
-* \[ **path**: *string*\]: [string, [LambdaOutput](#interfaceslambdaoutputmd)][]
-
-___
-
 ###  getLambdaExports
 
 ▸ **getLambdaExports**(`path`: string): *[string, [LambdaOutput](#interfaceslambdaoutputmd)][]*
 
-*Defined in [index.ts:81](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L81)*
+*Defined in [index.ts:81](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L81)*
 
 **Parameters:**
 
@@ -196,7 +151,7 @@ ___
 
 ▸ **makeAPIGatewayLambda**(`args`: object & [LambdaOptions](#interfaceslambdaoptionsmd)): *object*
 
-*Defined in [index.ts:40](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L40)*
+*Defined in [index.ts:40](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L40)*
 
 **Parameters:**
 
@@ -220,7 +175,7 @@ ___
 
 ▸ **makeDDBLambda**(`args`: object & [LambdaOptions](#interfaceslambdaoptionsmd)): *object*
 
-*Defined in [index.ts:60](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L60)*
+*Defined in [index.ts:60](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L60)*
 
 **Parameters:**
 
@@ -238,7 +193,7 @@ ___
 
 ▸ **makeS3Lambda**(`args`: object & [LambdaOptions](#interfaceslambdaoptionsmd)): *object*
 
-*Defined in [index.ts:29](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L29)*
+*Defined in [index.ts:29](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L29)*
 
 **Parameters:**
 
@@ -256,7 +211,7 @@ ___
 
 ▸ **makeSQSLambda**(`args`: object): *object*
 
-*Defined in [index.ts:72](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L72)*
+*Defined in [index.ts:72](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L72)*
 
 **Parameters:**
 
@@ -306,7 +261,7 @@ Name | Type |
 
 • **description**? : *undefined | string*
 
-*Defined in [index.ts:20](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L20)*
+*Defined in [index.ts:20](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L20)*
 
 ___
 
@@ -314,7 +269,7 @@ ___
 
 • **func**: *Handler‹any, any›*
 
-*Defined in [index.ts:23](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L23)*
+*Defined in [index.ts:23](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L23)*
 
 ___
 
@@ -322,7 +277,7 @@ ___
 
 • **layers**? : *string[]*
 
-*Defined in [index.ts:22](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L22)*
+*Defined in [index.ts:22](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L22)*
 
 ___
 
@@ -330,7 +285,7 @@ ___
 
 • **memorySize**? : *undefined | string*
 
-*Defined in [index.ts:21](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L21)*
+*Defined in [index.ts:21](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L21)*
 
 ___
 
@@ -338,7 +293,7 @@ ___
 
 • **name**? : *undefined | string*
 
-*Defined in [index.ts:19](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L19)*
+*Defined in [index.ts:19](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L19)*
 
 ___
 
@@ -346,7 +301,7 @@ ___
 
 • **reservedConcurrency**? : *undefined | number*
 
-*Defined in [index.ts:17](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L17)*
+*Defined in [index.ts:17](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L17)*
 
 ___
 
@@ -354,7 +309,7 @@ ___
 
 • **role**? : *undefined | string*
 
-*Defined in [index.ts:15](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L15)*
+*Defined in [index.ts:15](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L15)*
 
 ___
 
@@ -362,7 +317,7 @@ ___
 
 • **runtime**? : *"node10.x" | "node12.x"*
 
-*Defined in [index.ts:18](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L18)*
+*Defined in [index.ts:18](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L18)*
 
 ___
 
@@ -370,7 +325,7 @@ ___
 
 • **timeout**? : *undefined | number*
 
-*Defined in [index.ts:14](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L14)*
+*Defined in [index.ts:14](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L14)*
 
 ___
 
@@ -378,7 +333,7 @@ ___
 
 • **tracing**? : *undefined | false | true*
 
-*Defined in [index.ts:16](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L16)*
+*Defined in [index.ts:16](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L16)*
 
 ___
 
@@ -386,7 +341,7 @@ ___
 
 • **warmup**? : *undefined | false | true*
 
-*Defined in [index.ts:13](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L13)*
+*Defined in [index.ts:13](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L13)*
 
 
 <a name="interfaceslambdaoutputmd"></a>
@@ -426,7 +381,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[description](#optional-description)*
 
-*Defined in [index.ts:20](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L20)*
+*Defined in [index.ts:20](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L20)*
 
 ___
 
@@ -436,7 +391,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[func](#func)*
 
-*Defined in [index.ts:23](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L23)*
+*Defined in [index.ts:23](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L23)*
 
 ___
 
@@ -444,7 +399,7 @@ ___
 
 • **lambdaType**: *string*
 
-*Defined in [index.ts:26](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L26)*
+*Defined in [index.ts:26](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L26)*
 
 ___
 
@@ -454,7 +409,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[layers](#optional-layers)*
 
-*Defined in [index.ts:22](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L22)*
+*Defined in [index.ts:22](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L22)*
 
 ___
 
@@ -464,7 +419,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[memorySize](#optional-memorysize)*
 
-*Defined in [index.ts:21](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L21)*
+*Defined in [index.ts:21](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L21)*
 
 ___
 
@@ -474,7 +429,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[name](#optional-name)*
 
-*Defined in [index.ts:19](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L19)*
+*Defined in [index.ts:19](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L19)*
 
 ___
 
@@ -484,7 +439,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[reservedConcurrency](#optional-reservedconcurrency)*
 
-*Defined in [index.ts:17](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L17)*
+*Defined in [index.ts:17](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L17)*
 
 ___
 
@@ -494,7 +449,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[role](#optional-role)*
 
-*Defined in [index.ts:15](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L15)*
+*Defined in [index.ts:15](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L15)*
 
 ___
 
@@ -504,7 +459,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[runtime](#optional-runtime)*
 
-*Defined in [index.ts:18](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L18)*
+*Defined in [index.ts:18](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L18)*
 
 ___
 
@@ -514,7 +469,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[timeout](#optional-timeout)*
 
-*Defined in [index.ts:14](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L14)*
+*Defined in [index.ts:14](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L14)*
 
 ___
 
@@ -524,7 +479,7 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[tracing](#optional-tracing)*
 
-*Defined in [index.ts:16](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L16)*
+*Defined in [index.ts:16](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L16)*
 
 ___
 
@@ -534,4 +489,4 @@ ___
 
 *Inherited from [LambdaOptions](#interfaceslambdaoptionsmd).[warmup](#optional-warmup)*
 
-*Defined in [index.ts:13](https://github.com/rhdeck/serverless-lambda-builder/blob/1556bc1/src/index.ts#L13)*
+*Defined in [index.ts:13](https://github.com/rhdeck/serverless-lambda-builder/blob/1259cca/src/index.ts#L13)*
