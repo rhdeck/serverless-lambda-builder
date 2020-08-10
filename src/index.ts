@@ -22,7 +22,7 @@ interface LambdaOptions {
   layers?: string[];
   func: Handler<any, any>;
 }
-interface LambdaOutput extends LambdaOptions {
+export interface LambdaOutput extends LambdaOptions {
   lambdaType: string;
 }
 
@@ -80,18 +80,24 @@ const lambdaExports: {
 } = {};
 export function getLambdaExports(path: string) {
   if (!lambdaExports[path]) {
-    const exports = <{ [key: string]: LambdaOutput | undefined }>require(path);
-    const x = <[string, LambdaOutput][]>Object.entries(exports).filter(
-      ([key, x]) => {
-        try {
-          if (!x) return false;
-          return !!x.lambdaType;
-        } catch (e) {
-          return false;
+    try {
+      const exports = <{ [key: string]: LambdaOutput | undefined }>(
+        require(path)
+      );
+      const x = <[string, LambdaOutput][]>Object.entries(exports).filter(
+        ([key, x]) => {
+          try {
+            if (!x) return false;
+            return !!x.lambdaType;
+          } catch (e) {
+            return false;
+          }
         }
-      }
-    );
-    lambdaExports[path] = x;
+      );
+      lambdaExports[path] = x;
+    } catch (e) {
+      lambdaExports[path] = [];
+    }
   }
   return lambdaExports[path];
 }
@@ -201,6 +207,9 @@ export function buildServerlessFunctionsObj(
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({ sqs: o.queue });
               })();
+              break;
+            case "lambda":
+              //No-op - generic options only
               break;
             default:
               throw new Error(

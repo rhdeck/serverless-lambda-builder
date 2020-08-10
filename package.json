@@ -1,5 +1,5 @@
 {
-  "name": "template",
+  "name": "@raydeck/serverless-lambda-builder",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -9,19 +9,19 @@
     "pre-commit": "(git-branch-is --not main || (set -u && echo $ALLOWMAIN)) && yarn test",
     "test": "tsc --noEmit",
     "build": "tsc",
-    "docs": "typedoc --theme markdown --readme none --mode file --excludeNotExported --includeVersion --out docstemp && commanderdoc markdown lib/bin.js -o docstemp/__cli.md --cli-name `npx jq -r .name package.json` && rm README.md ; concat-md docstemp > README.md && rm -rf docstemp",
+    "docs": "typedoc --theme markdown --readme none --mode file --excludeNotExported --includeVersion --out docstemp && commanderdoc markdown lib/bin.js -o docstemp/__cli.md --cli-name \"npx `npx jq -r .name package.json`\" && rm README.md ; mv docstemp/README.md docstemp/_library.md && concat-md docstemp > README.md && rm -rf docstemp",
     "prepublishOnly": "yarn build && yarn docs && git commit README.md -m \"docs: updating docs\" && git push"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhdeck/base.git"
+    "url": "git+https://github.com/rhdeck/serverless-lambda-builder.git"
   },
   "author": "Ray Deck",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhdeck/base/issues"
+    "url": "https://github.com/rhdeck/serverless-lambda-builder/issues"
   },
-  "homepage": "https://github.com/rhdeck/base#readme",
+  "homepage": "https://github.com/rhdeck/serverless-lambda-builder#readme",
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
@@ -46,6 +46,7 @@
     "install-peers-cli": "^2.2.0",
     "mustache": "^4.0.1",
     "prettier": "^2.0.5",
-    "tslint": "^6.1.3"
+    "tslint": "^6.1.3",
+    "yaml": "^1.10.0"
   }
 }
