@@ -1,7 +1,7 @@
 {
   "name": "@raydeck/serverless-lambda-builder",
   "version": "1.0.0",
-  "description": "",
+  "description": "Build lambda definitiosn for serverless",
   "main": "lib/index.js",
   "bin": "lib/bin.js",
   "scripts": {
