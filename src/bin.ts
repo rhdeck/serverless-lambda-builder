@@ -8,42 +8,26 @@ commander.option(
   "Working directory for project",
   "."
 );
-commander
-  .command("wrapper")
-  .description("Build wrapper ts file for lambdas")
-  .option(
-    "-o --output <outputfile>",
-    "Output to write to",
-    "./lambdas_wrapper.ts"
-  )
-  .action(({ output }) => {
-    //Let's put this into working path
-    const source = join(__dirname, "..", "templates", "bin.ts");
-    const dest = join(commander.workingpath, "bin.ts");
-    copyFileSync(source, dest);
-    spawnSync(
-      "npx",
-      [
-        "ts-node",
-        dest,
-        "wrapper",
-        "--workingpath",
-        commander.workingpath,
-        "--output",
-        output,
-      ],
-      { stdio: "inherit" }
-    );
-    unlinkSync(dest);
-  });
+
 commander
   .command("serverless")
   .description("Update serverless.yml with functions")
   .option("-y --yamlfile", "Path to serverless.yml file", "./serverless.yml")
-  .action(({ yamlfile }) => {
+
+  .option(
+    "-h --handler-file",
+    "File containing getLambdas export",
+    "handler_wrapper.ts"
+  )
+  .option(
+    "-l --lambdas-export",
+    "Name of the lambdas export (result of getLambdas)",
+    "lambdas"
+  )
+  .action(({ yamlfile, handlerFile, lambdasExport }) => {
     //Let's put this into working path
     const source = join(__dirname, "..", "templates", "bin.ts");
-    const dest = join(commander.workingpath, "bin.ts");
+    const dest = join(commander.workingpath, "__compile_lambdas.ts");
     copyFileSync(source, dest);
     spawnSync(
       "npx",
@@ -55,6 +39,10 @@ commander
         commander.workingpath,
         "--yamlfile",
         yamlfile,
+        "--handler-file",
+        handlerFile,
+        "--lambdas-export",
+        lambdasExport,
       ],
       { stdio: "inherit" }
     );

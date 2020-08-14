@@ -3,12 +3,10 @@ import type {
   APIGatewayProxyHandlerV2,
   DynamoDBStreamHandler,
   SQSHandler,
+  CognitoUserPoolTriggerHandler,
 } from "aws-lambda";
 import type { Handler } from "aws-lambda/handler";
-import { stringify } from "querystring";
-import { isArray } from "util";
-import mustache from "mustache";
-import prettier from "prettier";
+import { basename } from "path";
 interface LambdaOptions {
   warmup?: boolean;
   timeout?: number;
@@ -22,16 +20,25 @@ interface LambdaOptions {
   layers?: string[];
   func: Handler<any, any>;
 }
+type LambdaArgs = Omit<LambdaOptions, "func">;
 export interface LambdaOutput extends LambdaOptions {
   lambdaType: string;
 }
-
+let _wrapper: (...args: any[]) => any;
+export function setWrapper(wrapper: typeof _wrapper) {
+  _wrapper = wrapper;
+}
+let _defaults: LambdaArgs = {};
+export function setDefaults(defaults: LambdaArgs) {
+  _defaults = defaults;
+}
 export function makeS3Lambda(
   args: {
     bucket: string | string[];
     func: S3Handler;
   } & LambdaOptions
 ) {
+  if (_wrapper) args.func = _wrapper(args.func);
   return {
     lambdaType: "s3",
     ...args,
@@ -49,6 +56,7 @@ export function makeAPIGatewayLambda(
   if (typeof args.method === "undefined") {
     args.method = "post";
   }
+  if (_wrapper) args.func = _wrapper(args.func);
   return {
     lambdaType: "apigateway",
     ...args,
@@ -64,81 +72,63 @@ export function makeDDBLambda(
     batchSize?: number;
   } & LambdaOptions
 ) {
+  if (_wrapper) args.func = _wrapper(args.func);
   return {
     lambdaType: "ddb",
     ...args,
   };
 }
 export function makeSQSLambda(args: { queue: string; func: SQSHandler }) {
+  if (_wrapper) args.func = _wrapper(args.func);
   return {
     lambdaType: "sqs",
     ...args,
   };
 }
-const lambdaExports: {
-  [path: string]: [string, LambdaOutput][];
-} = {};
-export function getLambdaExports(path: string) {
-  if (!lambdaExports[path]) {
-    try {
-      const exports = <{ [key: string]: LambdaOutput | undefined }>(
-        require(path)
-      );
-      const x = <[string, LambdaOutput][]>Object.entries(exports).filter(
-        ([key, x]) => {
-          try {
-            if (!x) return false;
-            return !!x.lambdaType;
-          } catch (e) {
-            return false;
-          }
-        }
-      );
-      lambdaExports[path] = x;
-    } catch (e) {
-      lambdaExports[path] = [];
-    }
-  }
-  return lambdaExports[path];
+export type CognitoTriggerType =
+  | "CreateAuthChallenge"
+  | "CustomMessage"
+  | "DefineAuthChallenge"
+  | "PostAuthentication"
+  | "PostConfirmation"
+  | "PreAuthentication"
+  | "PreSignUp"
+  | "TokenGeneration"
+  | "UserMigration"
+  | "VerifyAuthChallengeResponse";
+export function makeCognitoLambda(args: {
+  pool: string;
+  triggerOrTriggers: CognitoTriggerType | CognitoTriggerType[];
+  func: CognitoUserPoolTriggerHandler;
+}) {
+  if (_wrapper) args.func = _wrapper(args.func);
+  return {
+    lambdaType: "cognito",
+    ...args,
+  };
 }
-export function buildWrapperText(exportsObj: {
+
+export function getLambdaExports(exports: { [key: string]: LambdaOutput }) {
+  try {
+    console.log(exports);
+    return <[string, LambdaOutput][]>Object.entries(exports).filter(
+      ([key, x]) => {
+        try {
+          if (!x) return false;
+          return !!x.lambdaType;
+        } catch (e) {
+          return false;
+        }
+      }
+    );
+  } catch (e) {
+    console.log("hit an error", e);
+    return [];
+  }
+}
+export function buildServerlessFunctionsObj(exportsObj: {
   [path: string]: [string, LambdaOutput][];
 }) {
-  const imports: string[] = [];
-  const wraps: string[] = [];
-  Object.entries(exportsObj).map(([path, lambdaExports]) => {
-    lambdaExports.forEach(([key, obj]) => {
-      const newKey = path.replace("/", "_") + "__" + key;
-      imports.push(`import {${key} as ${newKey}} from "${path}";`);
-      wraps.push(
-        ` ${newKey}: wrapperFunction ? wrapperFunction<typeof ${newKey}.func>(${newKey}.func, ${newKey}) : ${newKey}.func,`
-      );
-    });
-  });
-  const getLambdasText = mustache.render(getLambdasWrapper, { wraps });
-  const wrapper = prettier.format([...imports, getLambdasText].join("\n"), {
-    parser: "typescript",
-  });
-  return wrapper;
-}
-const getLambdasWrapper = `
-export default function getLambdas(
-  wrapperFunction?: (
-    arg: (...args: any) => (...args: any) => any
-  ) => (...args: any) => any
-) {
-    return { 
-{{{wraps}}}
-    };
-}
-`;
-export function buildServerlessFunctionsObj(
-  exportsObj: {
-    [path: string]: [string, LambdaOutput][];
-  },
-  defaults: Omit<LambdaOptions, "func"> = {},
-  base: string = "handler_wrapper.getLambdas"
-) {
   const funcArr = Object.entries(exportsObj).flatMap(
     ([path, lambdaExports]) => {
       //   const lambdaExports = getLambdaExports(path);
@@ -147,8 +137,8 @@ export function buildServerlessFunctionsObj(
           const lambdaObj = <LambdaOutput>obj;
           const funcobj: { [key: string]: any } = {
             name: lambdaObj.name || key,
-            handler: base + key,
-            ...defaults,
+            handler: [basename(path, ".ts"), key, "func"].join("."),
+            ...(_defaults || {}),
           };
           //#region merge optional values from lambdaObj into the output function object
           if (typeof lambdaObj.warmup !== "undefined")
@@ -165,6 +155,9 @@ export function buildServerlessFunctionsObj(
             funcobj.tracing = lambdaObj.tracing;
           if (typeof lambdaObj.tracing !== "undefined")
             funcobj.reservedConcurrency = lambdaObj.reservedConcurrency;
+          if (typeof funcobj.role === "string") {
+            funcobj.role = { "Fn:GetAtt": [funcobj.role, "arn"] };
+          }
           //#endregion
           switch (lambdaObj.lambdaType) {
             case "s3":
@@ -195,8 +188,8 @@ export function buildServerlessFunctionsObj(
                 funcobj.events.push({
                   stream: {
                     type: "dynamodb",
-                    batchSize: funcobj.batchSize,
-                    arn: funcobj.arn,
+                    batchSize: o.batchSize || undefined,
+                    arn: o.arn,
                   },
                 });
               })();
@@ -208,6 +201,17 @@ export function buildServerlessFunctionsObj(
                 funcobj.events.push({ sqs: o.queue });
               })();
               break;
+            case "cognito":
+              () => {
+                const o = <ReturnType<typeof makeCognitoLambda>>lambdaObj;
+                if (!funcobj.events) funcobj.events = [];
+                funcobj.events.push({
+                  cognitoUserPool: {
+                    pool: o.pool,
+                    trigger: o.triggerOrTriggers,
+                  },
+                });
+              };
             case "lambda":
               //No-op - generic options only
               break;

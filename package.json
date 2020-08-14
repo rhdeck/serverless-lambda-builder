@@ -7,7 +7,7 @@
   "scripts": {
     "pre-commit": "(git-branch-is --not main || (set -u && echo $ALLOWMAIN)) && yarn test",
     "test": "tsc --noEmit",
-    "build": "tsc",
+    "build": "tsc && chmod +x lib/bin.js",
     "docs": "typedoc --theme markdown --readme none --mode file --excludeNotExported --includeVersion --out docstemp && commanderdoc markdown lib/bin.js -o docstemp/__cli.md --cli-name \"npx `npx jq -r .name package.json`\" && rm README.md ; mv docstemp/README.md docstemp/_library.md && concat-md docstemp > README.md && rm -rf docstemp",
     "prepublishOnly": "yarn build && yarn docs && git commit README.md -m \"docs: updating docs\" && git push"
   },
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
+    "@raydeck/livelink": "^1.5.2",
     "@types/aws-lambda": "^8.10.59",
     "@types/mustache": "^4.0.1",
     "@types/node": "^14.0.27",
