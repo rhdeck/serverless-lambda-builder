@@ -7,7 +7,7 @@ import type {
 } from "aws-lambda";
 import type { Handler } from "aws-lambda/handler";
 import { basename } from "path";
-interface LambdaOptions {
+interface LambdaArgs {
   warmup?: boolean;
   timeout?: number;
   role?: string;
@@ -18,10 +18,12 @@ interface LambdaOptions {
   description?: string;
   memorySize?: string;
   layers?: string[];
+}
+interface LambdaOptions extends LambdaArgs {
   func: Handler<any, any>;
 }
-type LambdaArgs = Omit<LambdaOptions, "func">;
 export interface LambdaOutput extends LambdaOptions {
+  (): Handler<any, any>;
   lambdaType: string;
 }
 let _wrapper: (...args: any[]) => any;
@@ -39,10 +41,7 @@ export function makeS3Lambda(
   } & LambdaOptions
 ) {
   if (_wrapper) args.func = _wrapper(args.func);
-  return {
-    lambdaType: "s3",
-    ...args,
-  };
+  return { ...args.func, lambdaType: "s3", ...args };
 }
 export function makeAPIGatewayLambda(
   args: {
@@ -58,6 +57,7 @@ export function makeAPIGatewayLambda(
   }
   if (_wrapper) args.func = _wrapper(args.func);
   return {
+    ...args.func,
     lambdaType: "apigateway",
     ...args,
     method: typeof args.method !== "undefined" ? args.method : "post",
@@ -74,6 +74,7 @@ export function makeDDBLambda(
 ) {
   if (_wrapper) args.func = _wrapper(args.func);
   return {
+    ...args.func,
     lambdaType: "ddb",
     ...args,
   };
@@ -81,6 +82,7 @@ export function makeDDBLambda(
 export function makeSQSLambda(args: { queue: string; func: SQSHandler }) {
   if (_wrapper) args.func = _wrapper(args.func);
   return {
+    ...args.func,
     lambdaType: "sqs",
     ...args,
   };
@@ -137,7 +139,7 @@ export function buildServerlessFunctionsObj(exportsObj: {
           const lambdaObj = <LambdaOutput>obj;
           const funcobj: { [key: string]: any } = {
             name: lambdaObj.name || key,
-            handler: [basename(path, ".ts"), key, "func"].join("."),
+            handler: [basename(path, ".ts"), key].join("."),
             ...(_defaults || {}),
           };
           //#region merge optional values from lambdaObj into the output function object
@@ -156,20 +158,22 @@ export function buildServerlessFunctionsObj(exportsObj: {
           if (typeof lambdaObj.tracing !== "undefined")
             funcobj.reservedConcurrency = lambdaObj.reservedConcurrency;
           if (typeof funcobj.role === "string") {
-            funcobj.role = { "Fn:GetAtt": [funcobj.role, "arn"] };
+            funcobj.role = { "Fn::GetAtt": [funcobj.role, "Arn"] };
           }
           //#endregion
           switch (lambdaObj.lambdaType) {
             case "s3":
               (() => {
-                const o = <ReturnType<typeof makeS3Lambda>>lambdaObj;
+                const o = <ReturnType<typeof makeS3Lambda>>(<unknown>lambdaObj);
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({ s3: o.bucket });
               })();
               break;
             case "apigateway":
               (() => {
-                const o = <ReturnType<typeof makeAPIGatewayLambda>>lambdaObj;
+                const o = <ReturnType<typeof makeAPIGatewayLambda>>(
+                  (<unknown>lambdaObj)
+                );
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({
                   http: {
@@ -183,7 +187,9 @@ export function buildServerlessFunctionsObj(exportsObj: {
               break;
             case "ddb":
               (() => {
-                const o = <ReturnType<typeof makeDDBLambda>>lambdaObj;
+                const o = <ReturnType<typeof makeDDBLambda>>(
+                  (<unknown>lambdaObj)
+                );
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({
                   stream: {
@@ -196,14 +202,18 @@ export function buildServerlessFunctionsObj(exportsObj: {
               break;
             case "sqs":
               (() => {
-                const o = <ReturnType<typeof makeSQSLambda>>lambdaObj;
+                const o = <ReturnType<typeof makeSQSLambda>>(
+                  (<unknown>lambdaObj)
+                );
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({ sqs: o.queue });
               })();
               break;
             case "cognito":
               () => {
-                const o = <ReturnType<typeof makeCognitoLambda>>lambdaObj;
+                const o = <ReturnType<typeof makeCognitoLambda>>(
+                  (<unknown>lambdaObj)
+                );
                 if (!funcobj.events) funcobj.events = [];
                 funcobj.events.push({
                   cognitoUserPool: {
