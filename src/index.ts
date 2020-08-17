@@ -3,7 +3,7 @@ import type {
   APIGatewayProxyHandlerV2,
   DynamoDBStreamHandler,
   SQSHandler,
-  CognitoUserPoolTriggerHandler,
+  CognitoUserPoolTriggerEvent,
 } from "aws-lambda";
 import type { Handler } from "aws-lambda/handler";
 import { basename } from "path";
@@ -98,10 +98,13 @@ export type CognitoTriggerType =
   | "TokenGeneration"
   | "UserMigration"
   | "VerifyAuthChallengeResponse";
-export function makeCognitoLambda(args: {
+export function makeCognitoLambda<
+  TEvent = CognitoUserPoolTriggerEvent,
+  TResult = TEvent
+>(args: {
   pool: string;
   triggerOrTriggers: CognitoTriggerType | CognitoTriggerType[];
-  func: CognitoUserPoolTriggerHandler;
+  func: Handler<TEvent, TResult>;
 }) {
   if (_wrapper) args.func = _wrapper(args.func);
   return Object.assign(args.func, {
