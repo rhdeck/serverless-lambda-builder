@@ -138,7 +138,7 @@ export function buildServerlessFunctionsObj(exportsObj: {
         ([key, obj]) => {
           const lambdaObj = <LambdaOutput>obj;
           const funcobj: { [key: string]: any } = {
-            name: lambdaObj.name || key,
+            // name: lambdaObj.name || key,
             handler: [basename(path, ".ts"), key].join("."),
             ...(_defaults || {}),
           };
