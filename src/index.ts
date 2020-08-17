@@ -41,7 +41,10 @@ export function makeS3Lambda(
   } & LambdaOptions
 ) {
   if (_wrapper) args.func = _wrapper(args.func);
-  return { ...args.func, lambdaType: "s3", ...args };
+  return Object.assign(args.func, {
+    ...args,
+    lambdaType: "s3",
+  });
 }
 export function makeAPIGatewayLambda(
   args: {
@@ -56,14 +59,13 @@ export function makeAPIGatewayLambda(
     args.method = "post";
   }
   if (_wrapper) args.func = _wrapper(args.func);
-  return {
-    ...args.func,
-    lambdaType: "apigateway",
+  return Object.assign(args.func, {
     ...args,
     method: typeof args.method !== "undefined" ? args.method : "post",
     cors: typeof args.cors !== "undefined" ? args.cors : true,
     private: typeof args.private !== "undefined" ? args.private : false,
-  };
+    lambdaType: "apigateway",
+  });
 }
 export function makeDDBLambda(
   args: {
@@ -73,19 +75,17 @@ export function makeDDBLambda(
   } & LambdaOptions
 ) {
   if (_wrapper) args.func = _wrapper(args.func);
-  return {
-    ...args.func,
-    lambdaType: "ddb",
+  return Object.assign(args.func, {
     ...args,
-  };
+    lambdaType: "ddb",
+  });
 }
 export function makeSQSLambda(args: { queue: string; func: SQSHandler }) {
   if (_wrapper) args.func = _wrapper(args.func);
-  return {
-    ...args.func,
-    lambdaType: "sqs",
+  return Object.assign(args.func, {
     ...args,
-  };
+    lambdaType: "sqs",
+  });
 }
 export type CognitoTriggerType =
   | "CreateAuthChallenge"
@@ -104,10 +104,10 @@ export function makeCognitoLambda(args: {
   func: CognitoUserPoolTriggerHandler;
 }) {
   if (_wrapper) args.func = _wrapper(args.func);
-  return {
-    lambdaType: "cognito",
+  return Object.assign(args.func, {
     ...args,
-  };
+    lambdaType: "cognito",
+  });
 }
 
 export function getLambdaExports(exports: { [key: string]: LambdaOutput }) {
@@ -210,7 +210,7 @@ export function buildServerlessFunctionsObj(exportsObj: {
               })();
               break;
             case "cognito":
-              () => {
+              (() => {
                 const o = <ReturnType<typeof makeCognitoLambda>>(
                   (<unknown>lambdaObj)
                 );
@@ -221,7 +221,8 @@ export function buildServerlessFunctionsObj(exportsObj: {
                     trigger: o.triggerOrTriggers,
                   },
                 });
-              };
+              })();
+              break;
             case "lambda":
               //No-op - generic options only
               break;
