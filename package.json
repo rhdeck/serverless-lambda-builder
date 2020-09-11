@@ -1,6 +1,6 @@
 {
   "name": "@raydeck/serverless-lambda-builder",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Build lambda definitiosn for serverless",
   "main": "lib/index.js",
   "bin": "lib/bin.js",
