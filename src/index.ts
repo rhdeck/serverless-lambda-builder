@@ -1,6 +1,6 @@
 import type {
   S3Handler,
-  APIGatewayProxyHandlerV2,
+  APIGatewayProxyHandler,
   DynamoDBStreamHandler,
   SQSHandler,
   CognitoUserPoolTriggerEvent,
@@ -52,7 +52,7 @@ export function makeAPIGatewayLambda(
     method?: string;
     cors?: boolean;
     private?: boolean;
-    func: APIGatewayProxyHandlerV2;
+    func: APIGatewayProxyHandler;
   } & LambdaOptions
 ) {
   if (typeof args.method === "undefined") {
