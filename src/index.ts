@@ -4,6 +4,7 @@ import type {
   DynamoDBStreamHandler,
   SQSHandler,
   CognitoUserPoolTriggerEvent,
+  EventBridgeHandler,
 } from "aws-lambda";
 import type { Handler } from "aws-lambda/handler";
 import { basename } from "path";
@@ -86,6 +87,15 @@ export function makeSQSLambda(args: { queue: string; func: SQSHandler }) {
     ...args,
     lambdaType: "sqs",
   });
+}
+export function makeEventBridgeLambda<TDetail>(args: {
+  detailType: string;
+  func: EventBridgeHandler<string, TDetail, void>;
+  source: string;
+  detail: { [key: string]: any };
+}) {
+  if (_wrapper) args.func = _wrapper(args.func);
+  return Object.assign(args.func, { ...args, lambdaType: "eventbridge" });
 }
 export type CognitoTriggerType =
   | "CreateAuthChallenge"
@@ -228,6 +238,23 @@ export function buildServerlessFunctionsObj(exportsObj: {
               break;
             case "lambda":
               //No-op - generic options only
+              break;
+            case "eventbridge":
+              (() => {
+                const o = <ReturnType<typeof makeEventBridgeLambda>>(
+                  (<unknown>lambdaObj)
+                );
+                if (!funcobj.events) funcobj.events = [];
+                funcobj.events.push({
+                  eventBridge: {
+                    pattern: {
+                      source: [o.source],
+                      "detail-type": [o.detailType],
+                      detail: o.detail,
+                    },
+                  },
+                });
+              })();
               break;
             default:
               throw new Error(
