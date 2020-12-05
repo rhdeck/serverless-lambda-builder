@@ -50,7 +50,7 @@ export function makeS3Lambda(
 export function makeAPIGatewayLambda(
   args: {
     path: string;
-    method?: string;
+    method?: "get" | "post" | "delete" | "put";
     cors?: boolean;
     private?: boolean;
     func: APIGatewayProxyHandler;
