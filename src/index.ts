@@ -272,3 +272,28 @@ export function buildServerlessFunctionsObj(exportsObj: {
     <{ [key: string]: any }>{}
   );
 }
+export function sendHttpResult(
+  status: number,
+  body: string,
+  headers?: { [key: string]: any }
+) {
+  var response = {
+    statusCode: status,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Headers":
+        "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Methods": "OPTIONS,POST, GET",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Origin": "*",
+      "X-Requested-With": "*",
+      ...(headers ? headers : {}),
+    },
+    body: body,
+  };
+  return response;
+}
+export function httpSuccess(body: any) {
+  const bodyString = JSON.stringify(body);
+  return sendHttpResult(200, bodyString);
+}
