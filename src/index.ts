@@ -35,6 +35,10 @@ let _defaults: LambdaArgs = {};
 export function setDefaults(defaults: LambdaArgs) {
   _defaults = defaults;
 }
+export function makeLambda(args: LambdaOptions) {
+  if (_wrapper) args.func = _wrapper(args.func);
+  return Object.assign(args.func, { ...args, lambdaType: "lambda" });
+}
 export function makeS3Lambda(
   args: {
     bucket: string | string[];
@@ -273,12 +277,12 @@ export function buildServerlessFunctionsObj(exportsObj: {
   );
 }
 export function sendHttpResult(
-  status: number,
+  statusCode: number,
   body: string,
   headers?: { [key: string]: any }
 ) {
   var response = {
-    statusCode: status,
+    statusCode,
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Headers":
@@ -289,7 +293,7 @@ export function sendHttpResult(
       "X-Requested-With": "*",
       ...(headers ? headers : {}),
     },
-    body: body,
+    body,
   };
   return response;
 }
