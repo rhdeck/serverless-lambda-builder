@@ -17,7 +17,7 @@ interface LambdaArgs {
   runtime?: "node10.x" | "node12.x";
   name?: string;
   description?: string;
-  memorySize?: string;
+  memorySize?: number;
   layers?: string[];
 }
 interface LambdaOptions extends LambdaArgs {
@@ -153,6 +153,7 @@ export function buildServerlessFunctionsObj(exportsObj: {
       //   const lambdaExports = getLambdaExports(path);
       return <[string, { [key: string]: any }][]>lambdaExports.map(
         ([key, obj]) => {
+          console.log("loking at lambda object", key, obj);
           const lambdaObj = <LambdaOutput>obj;
           const funcobj: { [key: string]: any } = {
             // name: lambdaObj.name || key,
@@ -174,8 +175,17 @@ export function buildServerlessFunctionsObj(exportsObj: {
             funcobj.tracing = lambdaObj.tracing;
           if (typeof lambdaObj.tracing !== "undefined")
             funcobj.reservedConcurrency = lambdaObj.reservedConcurrency;
-          if (typeof funcobj.role === "string") {
+          if (typeof lambdaObj.role === "string") {
             funcobj.role = { "Fn::GetAtt": [funcobj.role, "Arn"] };
+          }
+          if (typeof lambdaObj.description === "string") {
+            funcobj.description = lambdaObj.description;
+          }
+          if (Array.isArray(lambdaObj.layers)) {
+            funcobj.layers = [...lambdaObj.layers];
+          }
+          if (typeof lambdaObj.memorySize === "number") {
+            funcobj.memorySize = lambdaObj.memorySize;
           }
           //#endregion
           switch (lambdaObj.lambdaType) {
