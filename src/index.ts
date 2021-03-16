@@ -85,7 +85,9 @@ export function makeDDBLambda(
     lambdaType: "ddb",
   });
 }
-export function makeSQSLambda(args: { queue: string; func: SQSHandler }) {
+export function makeSQSLambda(
+  args: { queue: string; func: SQSHandler; batchSize?: number } & LambdaOptions
+) {
   if (_wrapper) args.func = _wrapper(args.func);
   return Object.assign(args.func, {
     ...args,
@@ -233,7 +235,9 @@ export function buildServerlessFunctionsObj(exportsObj: {
                   (<unknown>lambdaObj)
                 );
                 if (!funcobj.events) funcobj.events = [];
-                funcobj.events.push({ sqs: o.queue });
+                funcobj.events.push({
+                  sqs: { arn: o.queue, batchSize: o.batchSize || undefined },
+                });
               })();
               break;
             case "cognito":
